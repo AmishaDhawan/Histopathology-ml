@@ -487,6 +487,7 @@ class ViTHistoClassifier(nn.Module):
         original_flash = last_block.attn.use_flash
         last_block.attn.use_flash = False
 
+        was_training = self.training
         self.eval()
         with torch.no_grad():
             B = x.shape[0]
@@ -508,8 +509,10 @@ class ViTHistoClassifier(nn.Module):
             # Get attention weights from last block
             attn_weights = last_block.attn.get_attention_weights()
 
-        # Restore flash attention setting
+        # Restore flash attention setting and training mode
         last_block.attn.use_flash = original_flash
+        if was_training:
+            self.train()
 
         return attn_weights
 

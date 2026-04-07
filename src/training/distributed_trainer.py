@@ -21,9 +21,9 @@ FSDP (FullyShardedDataParallel):
 
 Adam optimizer memory:
 ======================
-Adam stores: parameters (fp32) + first moment (fp32) + second moment (fp32)
-= 3 x model_size in memory
-With FSDP: each GPU only stores 3 x (model_size / N) for optimizer states
+Adam stores: first moment (fp32) + second moment (fp32)
+= 2 x model_size in optimizer state memory
+With FSDP: each GPU only stores 2 x (model_size / N) for optimizer states
 """
 
 import os
@@ -265,7 +265,7 @@ class DistributedTrainer:
         DDP stores: full model + full gradients + full optimizer states
         FSDP stores: 1/N of (model + gradients + optimizer states)
 
-        Adam optimizer memory = 3 x model_size (params + m1 + m2)
+        Adam optimizer memory = 2 x model_size (m1 + m2)
 
         Args:
             model: the PyTorch model
@@ -281,9 +281,10 @@ class DistributedTrainer:
         # Gradients are same size as parameters
         grad_mb = param_mb
 
-        # Adam optimizer: first moment (m1) + second moment (m2) + params copy
-        # = 3x parameter size (all in fp32)
-        optimizer_mb = 3 * param_mb
+        # Adam optimizer: first moment (m1) + second moment (m2)
+        # = 2x parameter size (all in fp32)
+        # Note: optimizer holds references to model params, not copies
+        optimizer_mb = 2 * param_mb
 
         total_ddp_mb = param_mb + grad_mb + optimizer_mb
 
