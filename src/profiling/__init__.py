@@ -1,1 +1,1 @@
-# Profiling module — implemented in Session 4
+# Profiling module — ProfilerWrapper and roofline plotter

@@ -1,23 +1,19 @@
 model:
-  name: vit_base_patch16_224
   num_classes: 4
+  use_flash_attention: true
+  patch_size: 16
+  image_size: 224
   pretrained: true
-  flash_attention: true
-  dropout_rate: 0.1
 
 training:
-  epochs: 50
-  batch_size: 64
-  learning_rate: 3.0e-5
-  lr_scheduler: cosine_warmup
-  warmup_epochs: 5
-  weight_decay: 0.05
-  early_stopping_patience: 7
-  gradient_clip_norm: 1.0
-
-distributed:
-  backend: nccl
-  strategy: ddp
+  epochs: 30
+  batch_size: 16       # Smaller than ResNet due to higher memory
+  learning_rate: 1.0e-4
+  warmup_epochs: 10    # ViT needs warmup — raw training is unstable
+  lr_scheduler: cosine
+  weight_decay: 0.05   # Higher than ResNet — ViT overfits more
+  dropout: 0.1
+  early_stopping_patience: 5
 
 optimizer: adamw
 
@@ -27,5 +23,9 @@ loss:
 
 data:
   image_size: 224
-  num_workers: 8
+  num_workers: 4
   pin_memory: true
+
+distributed:
+  backend: nccl
+  num_gpus: 1          # Change to 4 or 8 for multi-GPU
