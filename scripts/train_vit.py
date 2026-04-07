@@ -37,6 +37,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+import psutil
 import torch
 import torch.nn as nn
 import yaml
@@ -90,11 +91,15 @@ def load_config(config_path):
 
 
 def log_memory(step_name, device):
-    """Log GPU memory usage at a given step."""
+    """Log memory usage at a given step (GPU via torch.cuda, CPU via psutil RSS)."""
+    process = psutil.Process(os.getpid())
+    rss_mb = process.memory_info().rss / (1024 * 1024)
+    print(f"  [Memory @ {step_name}] RSS: {rss_mb:.1f} MB", end="")
     if torch.cuda.is_available() and device.type == "cuda":
         allocated = torch.cuda.memory_allocated(device) / (1024 * 1024)
         reserved = torch.cuda.memory_reserved(device) / (1024 * 1024)
-        print(f"  [Memory @ {step_name}] Allocated: {allocated:.1f} MB | Reserved: {reserved:.1f} MB")
+        print(f" | GPU Allocated: {allocated:.1f} MB | GPU Reserved: {reserved:.1f} MB", end="")
+    print()
 
 
 def train_one_epoch(model, loader, criterion, optimizer, scheduler, device, epoch, warmup_epochs, base_lr):
