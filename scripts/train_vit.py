@@ -394,7 +394,7 @@ def main():
     )
 
     # LR scheduler: cosine annealing (applied after warmup)
-    if config["training"]["lr_scheduler"] == "cosine":
+    if config["training"]["lr_scheduler"] == "cosine" and num_epochs > warmup_epochs:
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             optimizer, T_max=num_epochs - warmup_epochs
         )

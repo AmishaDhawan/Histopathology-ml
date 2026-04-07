@@ -380,11 +380,12 @@ class ViTHistoClassifier(nn.Module):
             block.norm2.weight.data.copy_(src_block.ln_2.weight.data)
             block.norm2.bias.data.copy_(src_block.ln_2.bias.data)
 
-            # MLP: torchvision uses linear_1, linear_2
-            block.mlp[0].weight.data.copy_(src_block.mlp.linear_1.weight.data)
-            block.mlp[0].bias.data.copy_(src_block.mlp.linear_1.bias.data)
-            block.mlp[3].weight.data.copy_(src_block.mlp.linear_2.weight.data)
-            block.mlp[3].bias.data.copy_(src_block.mlp.linear_2.bias.data)
+            # MLP: torchvision >= 0.14 MLPBlock inherits from nn.Sequential
+            # and uses indexed children: mlp[0] = first Linear, mlp[3] = second Linear
+            block.mlp[0].weight.data.copy_(src_block.mlp[0].weight.data)
+            block.mlp[0].bias.data.copy_(src_block.mlp[0].bias.data)
+            block.mlp[3].weight.data.copy_(src_block.mlp[3].weight.data)
+            block.mlp[3].bias.data.copy_(src_block.mlp[3].bias.data)
 
         # Transfer final LayerNorm
         self.norm.weight.data.copy_(pretrained_vit.encoder.ln.weight.data)
