@@ -1,0 +1,31 @@
+model:
+  name: vit_base_patch16_224
+  num_classes: 4
+  pretrained: true
+  flash_attention: true
+  dropout_rate: 0.1
+
+training:
+  epochs: 50
+  batch_size: 64
+  learning_rate: 3.0e-5
+  lr_scheduler: cosine_warmup
+  warmup_epochs: 5
+  weight_decay: 0.05
+  early_stopping_patience: 7
+  gradient_clip_norm: 1.0
+
+distributed:
+  backend: nccl
+  strategy: ddp
+
+optimizer: adamw
+
+loss:
+  type: focal
+  gamma: 2.0
+
+data:
+  image_size: 224
+  num_workers: 8
+  pin_memory: true

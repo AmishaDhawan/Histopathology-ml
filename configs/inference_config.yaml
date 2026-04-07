@@ -1,0 +1,26 @@
+trt_export:
+  model_checkpoint: outputs/vit/best_model.pt
+  precision: int8
+  calibration_batches: 50
+  max_batch_size: 32
+  workspace_size_gb: 4
+  dynamic_shapes:
+    min_batch: 1
+    opt_batch: 16
+    max_batch: 32
+
+serving:
+  host: 0.0.0.0
+  port: 8080
+  max_concurrent_requests: 64
+  request_timeout_seconds: 30
+
+dynamic_batcher:
+  max_batch_size: 32
+  max_wait_time_ms: 50
+  preferred_batch_sizes: [1, 8, 16, 32]
+
+benchmark:
+  num_warmup: 10
+  num_iterations: 100
+  batch_sizes: [1, 4, 8, 16, 32]
