@@ -408,7 +408,7 @@ def main():
 
     print(f"\nTraining ViT-Base for {num_epochs} epochs...")
     print(f"{'Epoch':>5} | {'Train Loss':>10} | {'Val Loss':>8} | "
-          f"{'Train F1':>8} | {'Val F1':>6} | {'Val AUROC':>9} | {'LR':>10}")
+          f"{'Train F1':>8} | {'Val F1':>6} | {'Val AUROC':>9} | {'LR':>10} | {'Time':>6}")
     print("-" * 85)
 
     for epoch in range(num_epochs):
